@@ -10,6 +10,7 @@ import com.dev.superior.dslist.dto.GameDTO;
 import com.dev.superior.dslist.dto.GameMinDTO;
 import com.dev.superior.dslist.entities.Game;
 import com.dev.superior.dslist.exception.ValidationException;
+import com.dev.superior.dslist.projections.GameMinProjection;
 import com.dev.superior.dslist.repositories.GameRepository;
 
 @Service
@@ -32,6 +33,15 @@ public class GameService {
 		}
 		Game result = gameRepository.findById(id).get();
 		return new GameDTO(result);
+	}
+	
+	@Transactional(readOnly = true)
+	public List<GameMinDTO> findByList(Long id){
+		if(gameRepository.searchByList(id) == null) {
+			throw new ValidationException("List ID does not exists");
+		}
+		List<GameMinProjection> result = gameRepository.searchByList(id);
+		return result.stream().map(x -> new GameMinDTO(x)).toList();
 	}
 	
 }
